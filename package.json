@@ -1,0 +1,25 @@
+{
+  "name": "SVN_Test",
+  "version": "1.0.1",
+  "description": "Testing",
+  "main": "app.js",
+  "dependencies": {
+    "express": "*",
+      "path":"*",
+      "recursive-readdir":"*" ,
+      "cookie-parser":"*",
+      "passport":"*",
+      "express-session":"*",
+      "body-parser":"*",
+      "excel4node":"*",
+      "js-beautify":"*",
+      "prettyjson":"*",
+      "xlsx":"*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
