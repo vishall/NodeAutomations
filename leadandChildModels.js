@@ -12,7 +12,7 @@ var pathRegExp = /\$\{(.*?)\}/g;
 var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
 var deviceDetailsCol = [],leadModelGUIDCol= [], deviceJSONCol = [];
-    
+
 recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/device/', function (err, files) {
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
@@ -27,9 +27,9 @@ recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogue
         if(newSearch != null){
             var uniqueArray = newSearch.filter(function(elem, pos) {
                 return newSearch.indexOf(elem) == pos;
-            }); 
-            for(var jCount =0;jCount<uniqueArray.length;jCount++){ 
-               var newPathValue = '"'+uniqueArray[jCount]+'"';  
+            });
+            for(var jCount =0;jCount<uniqueArray.length;jCount++){
+               var newPathValue = '"'+uniqueArray[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(uniqueArray[jCount]),"g");
                newPathsContainer.push(uniqueArray[jCount]);
                newContent = newContent.replace(regExpCheck,newPathValue);
@@ -49,7 +49,7 @@ recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogue
             loadDevicesAgain();
         }
     });
-    
+
     function loadDevicesAgain(){
         console.log(deviceJSONCol.length);
         var devicesLength = deviceJSONCol.length;
@@ -61,15 +61,30 @@ recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogue
                   }
             }
         }
-        generateExcelFile(deviceDetailsCol);
-    }
+
+        for(var deviceJSONColCount=0 ; deviceJSONColCount < deviceJSONCol.length ; deviceJSONColCount++){
+            for(var leadModelJSONCount =0 ; leadModelJSONCount<leadModelGUIDCol.length ; leadModelJSONCount++){
+                          if(deviceJSONCol[deviceJSONColCount]["leadModelInFamily"] == leadModelGUIDCol[leadModelJSONCount]["guid"] ){
+                          var deviceobj = deviceJSONCol[deviceJSONColCount];
+                              leadModelGUIDCol[leadModelJSONCount]["childmodels"].push(deviceobj["sku"]["code"]);
+                              //break;
+                          }
+                    }
+                }
+          }
+       generateExcelFile(leadModelGUIDCol);
+
 });
 
 function readLeadModels(deviceJSON){
-    
+
     var leadModelObj = {
-                   "guid":deviceJSON["leadModelInFamily"]
+                   "guid":deviceJSON["leadModelInFamily"],
+                   "sku": deviceJSON["sku"]["code"],
+                   "Model":deviceJSON["model"],
+                   "childmodels" : []
     };
+
     if(deviceJSON["leadModelInFamily"]){
         if(! leadModelGUIDCol.length) leadModelGUIDCol.push(leadModelObj);
         for(var leadDataCount = 0; leadDataCount < leadModelGUIDCol.length;leadDataCount++){
@@ -77,20 +92,15 @@ function readLeadModels(deviceJSON){
               else if(leadDataCount == (leadModelGUIDCol.length-1) ) leadModelGUIDCol.push(leadModelObj);
         }
     }
-    
+
 }
 
 function readdeviceDetails(deviceJSON){
-    
+
     var deviceObj = {
                    "guid":deviceJSON["id"],
                    "sku": deviceJSON["sku"]["code"],
                    "Model":deviceJSON["model"],
-                   "StockInfo":deviceJSON["stockInfo"]["stock"],
-                   "ConsumerNew": deviceJSON["channelPermissions"]["ConsumerNew"],
-                   "ConsumerUpgrade": deviceJSON["channelPermissions"]["ConsumerUpgrade"],
-                   "VoiceNew": deviceJSON["channelPermissions"]["VoiceNew"],
-                   "VoiceUpgrade": deviceJSON["channelPermissions"]["VoiceUpgrade"]
     };
     deviceDetailsCol.push(deviceObj);
 }
@@ -125,25 +135,18 @@ function generateExcelFile(collection){
         }
     }
     var ws2 = wb.WorkSheet('New Worksheet', wsOpts);
-    ws.Cell(1,1).String('GUID');
     ws.Cell(1,2).String('SKU');
-    ws.Cell(1,3).String('Model');
-    ws.Cell(1,4).String('Stock');
-    ws.Cell(1,5).String('ConsumerNew');
-    ws.Cell(1,6).String('ConsumerUpgrade');
-    ws.Cell(1,7).String('VoiceNew');
-    ws.Cell(1,8).String('VoiceUpgrade');
-    
+    ws.Cell(1,1).String('Model');
+
+
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
         var row = skuCountLength + 2;
-        ws.Cell(row,1).String(collection[skuCountLength]["guid"]);
+        var presentCollectionObj = collection[skuCountLength]["childmodels"];
         ws.Cell(row,2).String(collection[skuCountLength]["sku"]);
-        ws.Cell(row,3).String(collection[skuCountLength]["Model"]);
-        ws.Cell(row,4).String(collection[skuCountLength]["StockInfo"]);
-        ws.Cell(row,5).String(collection[skuCountLength]["ConsumerNew"]);
-        ws.Cell(row,6).String(collection[skuCountLength]["ConsumerUpgrade"]);
-        ws.Cell(row,7).String(collection[skuCountLength]["VoiceNew"]);
-        ws.Cell(row,8).String(collection[skuCountLength]["VoiceUpgrade"]);
+        ws.Cell(row,1).String(collection[skuCountLength]["Model"]);
+        for(var childModelsCount =0;childModelsCount < presentCollectionObj.length;childModelsCount++){
+           ws.Cell(row,(3+childModelsCount)).String(presentCollectionObj[childModelsCount]);
+        }
     }
     ws.Row(1).Height(30);
     ws.Column(1).Width(50);
@@ -165,7 +168,7 @@ function generateExcelFile(collection){
     wb.write("ExcelOutput/leadandChildModelDevices.xlsx",function(err){
         console.log("done");
     });
-        
+
 }
 
 function escapeRegExp(str) {
@@ -179,23 +182,22 @@ function writeToFile(file,content){
     } else {
         modifiedFileCount++;
         console.log("Modified Files"+modifiedFileCount);
-        
+
     }
 });
-     
 }
 
 
 function convertBacktoOriginalState(newContent,file,newPathsContainer){
     var originalState;
-    
+
     newContent = beautify(newContent, { indent_size: 3 });
     for(var jCount =0;jCount<newPathsContainer.length;jCount++){
-               var oldPathValue = '"'+newPathsContainer[jCount]+'"';  
+               var oldPathValue = '"'+newPathsContainer[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(oldPathValue),"g");
                newContent = newContent.replace(regExpCheck,newPathsContainer[jCount]);
     }
-    writeToFile(file,newContent);  
-    
+    writeToFile(file,newContent);
+
 }
 

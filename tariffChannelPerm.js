@@ -138,7 +138,7 @@ function generateExcelFile(collection){
     ws.Cell(1,4).Style(myStyle);
     ws.Cell(1,5).Style(myStyle);
     ws.Cell(1,6).Style(myStyle);
-    wb.write("ExcelOutput/Tariff_Paths_Ju.xlsx",function(err){ 
+    wb.write("ExcelOutput/Tariff_Paths_July.xlsx",function(err){
         console.log("done");
     });
         

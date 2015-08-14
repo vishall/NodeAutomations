@@ -1,7 +1,7 @@
 /* This Script will valoidate the Device PayG and Pay Monthly Prices */
 /* Please fill the below information before runing the script */
 
-var prodCatURL = 'D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/',
+var prodCatURL = 'D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/media/browsingDesktop.json',
     associationSheetURL = 'D:/Kanban/Projects_Gali/NodeJS/ExcelOutput/accy_Association.xlsx',
     accySKUCell = 'A', accyAssociationContainer = [], accyAssociationContainerLength;
     
@@ -61,14 +61,15 @@ function loadAccyAssociations(){
 function loadProdCatFiles(){
      try{
         var prodCatDeviceURL = prodCatURL+"/device/";
-         accyAssociationContainerLength = accyAssociationContainer.length;
-        recursive(prodCatDeviceURL, function (err, files) {
-            if(!err && files.length){
-                    var jsonFileCount = 0;
-                    var index = 0;
-                    console.log("Loading Accy JSON files.....");
-                    var jsonFiles = files.filter(function(file) {jsonFileCount++; return file.substr(-5) === '.json'; })
-                    jsonFiles.forEach(function(file) { console.log(file);
+       //  accyAssociationContainerLength = accyAssociationContainer.length;
+       // recursive(prodCatURL, function (err, files) {
+          //  if(!err && files.length){
+                  //  var jsonFileCount = 0;
+                   // var index = 0;
+                   // console.log("Loading Accy JSON files.....");
+                   // var jsonFiles = files.filter(function(file) {jsonFileCount++; return file.substr(-5) === '.json'; })
+                   // jsonFiles.forEach(function(file) {
+                   var file = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/media/browsingDesktop.json";
                         var content =  require(file);
                         var newContent = content;
                         var newSearch = newContent.match(pathRegExp);
@@ -76,33 +77,35 @@ function loadProdCatFiles(){
                         if(newSearch != null){
                             var uniqueArray = newSearch.filter(function(elem, pos) {
                                 return newSearch.indexOf(elem) == pos;
-                            }); 
+                            });
                             for(var jCount =0;jCount<uniqueArray.length;jCount++){
-                               var newPathValue = '"'+uniqueArray[jCount]+'"';  
+                               var newPathValue = '"'+uniqueArray[jCount]+'"';
                                var regExpCheck = new RegExp(escapeRegExp(uniqueArray[jCount]),"g");
                                newPathsContainer.push(uniqueArray[jCount]);
                                newContent = newContent.replace(regExpCheck,newPathValue);
                                var doubleQuoteRegEx = new RegExp(escapeRegExp('""$'),"g");
                             }
                             var json = JSON.parse(newContent);
-                            index++;
+                           // index++;
                       }else{
                             var json = JSON.parse(newContent);
-                            index++;   
+                          //  index++;
                      }
-                     
-                     getDeviceFilePath(file,json);
+                     console.log(json["attachments"][2]);
+                       convertBacktoOriginalState(json,file,newPathsContainer);
+                     //getDeviceFilePath(file,json);
                    // if(jsonFiles.length === index) { associateAccessories();}
-                     
-                    });
+
+       /*             });
             }else{
                     console.log("Oops.......");
                     console.log("Error in the ProdCat URL")   
-            }
-        });
+            }*/
+       // });
     }
     catch(e){
         console.log("Oops.......");
+        console.log(e);
         console.log("Something is wrong with ProdCat URL");
     }
 }
@@ -160,7 +163,7 @@ function associateAccessories(){
                         }
                      }
                      //if(jsonFiles.length === index)  associateAccessories();
-                     
+                     convertBacktoOriginalState(json,file,newPathsContainer);
                     });
             }else{
                     console.log("Oops.......");
@@ -203,7 +206,7 @@ function writeToFile(file,content){
 
 function convertBacktoOriginalState(newContent,file,newPathsContainer){
     var originalState;
-    
+    try{
     newContent = beautify(newContent, { indent_size: 3, "preserve_newlines": true ,"keep_array_indentation": false });
     for(var jCount =0;jCount<newPathsContainer.length;jCount++){
                var oldPathValue = '"'+newPathsContainer[jCount]+'"';  
@@ -211,13 +214,18 @@ function convertBacktoOriginalState(newContent,file,newPathsContainer){
                newContent = newContent.replace(regExpCheck,newPathsContainer[jCount]);
     }
     writeToFile(file,newContent);  
-    
+    }
+    catch(e){
+    console.log(e);
+      console.log("Error");
+    }
+
 }
 
 // Main Function for the Application
 (function(){
     console.log("Application has started");
-    loadAccyAssociations();
+    //loadAccyAssociations();
     loadProdCatFiles();
     //console.log(tariffCollectionTRS);
 })();

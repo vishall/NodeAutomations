@@ -118,7 +118,7 @@ function add500O2Bolton(tariffJSON,file,newPathsContainer){
       tariffJSON["relationships"] = relationships; 
     }
     var fileNewContent = JSON.stringify(tariffJSON);
-    convertBacktoOriginalState(fileNewContent,file,newPathsContainer)
+    convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
 }
 
 
