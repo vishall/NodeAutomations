@@ -16,7 +16,7 @@ var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
 var deviceDetailsCol = [], modifiedFileCount =0;
 
-recursive('D:/Kanban/Projects_Gali/ProdCat/Test/productCatalogueData_Master/catalogueData/device/', function (err, files) {
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/device/', function (err, files) {
     
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
@@ -61,11 +61,11 @@ function addCnCFlag(json,file,newPathsContainer){
             json["disableClickAndCollect"] = false;
             json["disableClickAndCollectNow"] = false;
             var fileNewContent = JSON.stringify(json);
-    //convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+   // convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
         }
     }else if(stockInfo == "DelayedDelivery"){
        if( json["disableClickAndCollect"] != true || json["disableClickAndCollectNow"] != false){
-           console.log(file);
+          // console.log(file);
            json["disableClickAndCollect"] = true;
            json["disableClickAndCollectNow"] = false;
            var fileNewContent = JSON.stringify(json);
@@ -73,17 +73,28 @@ function addCnCFlag(json,file,newPathsContainer){
        }
     }else if(stockInfo == "OutOfStock"){
         if(json["disableClickAndCollect"] != true || json["disableClickAndCollectNow"] != false){
-            console.log(file);
+          // console.log(file);
             json["disableClickAndCollect"] = true;
             json["disableClickAndCollectNow"] = false;
             var fileNewContent = JSON.stringify(json);
-    //convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+   // convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
         }
     }
-    
+
+    if(json["disableClickAndCollect"]  == "PreOrder"){
+       if(json["disableClickAndCollect"] != false || json["disableClickAndCollectNow"] != true){
+                // console.log(file);
+                  json["disableClickAndCollect"] = false;
+                  json["disableClickAndCollectNow"] = true;
+                  var fileNewContent = JSON.stringify(json);
+          convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+              }
+    }
     if(endOfLife == "EndOfLife"){
         json["disableClickAndCollect"] = true;
         json["disableClickAndCollectNow"] = true;
+         var fileNewContent = JSON.stringify(json);
+            convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
     }
     
     //var fileNewContent = JSON.stringify(json);

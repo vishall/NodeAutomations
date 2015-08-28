@@ -16,12 +16,12 @@ var loyaltyDiscounts12MContainer = [],loyaltyDiscounts18MContainer = [],loyaltyD
 
 loadLoyaltyDiscountsJSON();
 function loadLoyaltyDiscountsJSON(){   
-    recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master_M/catalogueData/loyaltyDiscounts/', function (err, files) {
+    recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/loyaltyDiscounts/', function (err, files) {
         var jsonFileCount = 0;
         var index = 0;
         var jsonFiles = files.filter(function(file) {jsonFileCount++; return file.substr(-5) === '.json'; })
         jsonFiles.forEach(function(file) {
-
+console.log("done");
             var content =  require(file);
             var newContent = content;
             var newSearch = newContent.match(pathRegExp);
@@ -91,8 +91,8 @@ function checkLoyaltyDiscountsEligibilty(tariffJSON){
 }
 
 function calculateTariffDiscounts(){
-    recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master_M/catalogueData/plan/monthly_2015/july/', function (err, files) {
-        var fileIndex = 0,json;
+    recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/aug/', function (err, files) {
+                                       var fileIndex = 0,json;
         var jsonFiles = files.filter(function(file) {return file.substr(-5) === '.json'; })
         jsonFiles.forEach(function(file) {
 
@@ -145,8 +145,10 @@ function addTarifftoLoyaltyDicount(discountFactor,file,commitmentPeriod){
    var tariffPath = pathOneIden+modiPath+pathTwoIden;
    var loyaltyEntry = {
        "id": tariffPath
-   }; 
-   for(var count =0; count<discountFactor;count++){
+   };
+   console.log(discountFactor);
+   if(discountFactor >15) discountFactor = 15;
+   for(var count =0; count<discountFactor;count++){//console.log(count);
         var loyalty12MJSON = loyaltyDiscounts12MContainer[count]["json"],
             loyalty18MJSON = loyaltyDiscounts18MContainer[count]["json"],
             loyalty24MJSON = loyaltyDiscounts24MContainer[count]["json"];

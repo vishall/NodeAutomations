@@ -35,7 +35,7 @@ if (!String.prototype.format) {
   };
 }
    
-recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master_M/catalogueData/plan/', function (err, files) {
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/', function (err, files) {
     var jsonFileCount = 0;
     //console.log("Error is ..");
     
@@ -91,7 +91,7 @@ function modifyChannelPermissions(planJSON,file,newPathsContainer){
               else planJSON["channelPermissions"]["VoiceUpgrade"] = "Hidden";
               matchCount++;
               loopMatchCount++;
-              if(tariffCollection[tariffCount]["pid"] == "T:CR6468:24M:10GB:CCA:DATAONLY:GBP26:S1") console.log("Got it");
+              //if(tariffCollection[tariffCount]["pid"] == "T:CR6468:24M:10GB:CCA:DATAONLY:GBP26:S1") console.log("Got it");
               (function(fileP,newPathsContainerP,planJSONP){   
                    var fileNewContentP = JSON.stringify(planJSONP);
                    convertBacktoOriginalState(fileNewContentP,fileP,newPathsContainerP); 
@@ -109,8 +109,8 @@ function modifyChannelPermissions(planJSON,file,newPathsContainer){
 
 function readTRSInformation(){ 
     tariffCollection = [];
-    var workbook = XLSX.readFile('D:/Kanban/Projects_Gali/Tariffs/July/Copy of v1 3 July Tariff Drop TRS.xlsx');
-    var tariffRows_Min_Count = 2,tariffRows_Max_Count = 36;
+    var workbook = XLSX.readFile('D:/Kanban/Projects_Gali/Tariffs/Aug/v1.9 August Tariff Drop TRS.xlsx');
+    var tariffRows_Min_Count = 2,tariffRows_Max_Count = 24;
     var sheet_name_list = workbook.SheetNames;
     sheet_name_list.forEach(function(y) {
        

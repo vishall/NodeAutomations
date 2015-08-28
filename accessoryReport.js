@@ -61,7 +61,8 @@ function readdeviceDetails(deviceJSON){
                    "ConsumerNew": deviceJSON["channelPermissions"]["ConsumerNew"],
                    "ConsumerUpgrade": deviceJSON["channelPermissions"]["ConsumerUpgrade"],
                    "VoiceNew": deviceJSON["channelPermissions"]["VoiceNew"],
-                   "VoiceUpgrade": deviceJSON["channelPermissions"]["VoiceUpgrade"]
+                   "VoiceUpgrade": deviceJSON["channelPermissions"]["VoiceUpgrade"],
+                   "price": deviceJSON["price"]
     };
     deviceDetailsCol.push(deviceObj);
 }
@@ -106,6 +107,7 @@ function generateExcelFile(collection){
     ws.Cell(1,8).String('ConsumerUpgrade');
     ws.Cell(1,9).String('VoiceNew');
     ws.Cell(1,10).String('VoiceUpgrade');
+    ws.Cell(1,11).String('Price');
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
         var row = skuCountLength + 2;
         ws.Cell(row,1).String(collection[skuCountLength]["guid"]);
@@ -118,7 +120,7 @@ function generateExcelFile(collection){
         ws.Cell(row,8).String(collection[skuCountLength]["ConsumerUpgrade"]);
         ws.Cell(row,9).String(collection[skuCountLength]["VoiceNew"]);
         ws.Cell(row,10).String(collection[skuCountLength]["VoiceUpgrade"]);
-        
+        ws.Cell(row,11).String(collection[skuCountLength]["price"]);
     }
     ws.Row(1).Height(30);
     ws.Column(1).Width(50);
@@ -138,7 +140,7 @@ function generateExcelFile(collection){
     ws.Cell(1,8).Style(myStyle);
     ws.Cell(1,9).Style(myStyle);
     ws.Cell(1,10).Style(myStyle);
-    wb.write("ExcelOutput/Accessories_Details_v2.xlsx",function(err){ 
+    wb.write("ExcelOutput/Accessories_Details_v3.xlsx",function(err){
         console.log("done");
     });
         

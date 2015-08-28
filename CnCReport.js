@@ -11,27 +11,25 @@ var recursive = require('recursive-readdir');
 var pathRegExp = /\$\{(.*?)\}/g;
 var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
-var channelPermCol = [];
-    
-recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/aug/', function (err, files) {
+var deviceDetailsCol = [];
+
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/accessories/', function (err, files) {
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
     console.log("Reading JSON files.....");
     var jsonFiles = files.filter(function(file) {jsonFileCount++; return file.substr(-5) === '.json'; });
-    channelPermCol =[];
-    
-    jsonFiles.forEach(function(file) {console.log(file);
+    deviceDetailsCol =[];
+    jsonFiles.forEach(function(file) {
         var content =  require(file);
-       // console.log(file);
         var newContent = content;
         var newSearch = newContent.match(pathRegExp);
         var newPathsContainer = [];
         if(newSearch != null){
             var uniqueArray = newSearch.filter(function(elem, pos) {
                 return newSearch.indexOf(elem) == pos;
-            }); 
-            for(var jCount =0;jCount<uniqueArray.length;jCount++){ 
-               var newPathValue = '"'+uniqueArray[jCount]+'"';  
+            });
+            for(var jCount =0;jCount<uniqueArray.length;jCount++){
+               var newPathValue = '"'+uniqueArray[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(uniqueArray[jCount]),"g");
                newPathsContainer.push(uniqueArray[jCount]);
                newContent = newContent.replace(regExpCheck,newPathValue);
@@ -42,33 +40,24 @@ recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogue
         else{
             json = JSON.parse(newContent);
         }
+        console.log(file);
         jsonFilesIndex++;
-        readChannelPerm(json,file);
+        readdeviceDetails(json);
         if(jsonFiles.length === jsonFilesIndex){
-           generateExcelFile(channelPermCol);
+           generateExcelFile(deviceDetailsCol);
         }
     });
 });
 
-function readChannelPerm(deviceJSON,file){
-     
-    if(deviceJSON["data"]) var dataCap  = deviceJSON["data"];
-    else var dataCap = " ";
-   // file = file.replace("\","/\");
-                       // console.log(file;)
+function readdeviceDetails(deviceJSON){
+
     var deviceObj = {
-                   "voice":deviceJSON["subType"],
-                   "type": deviceJSON["type"],
-                   "guid": deviceJSON["id"],
-                   "path":file,
-                   "dataCap" : dataCap,
-                   "price": deviceJSON["price"],
-                   "ConsumerNew": deviceJSON["channelPermissions"]["ConsumerNew"],
-                   "ConsumerUpgrade": deviceJSON["channelPermissions"]["ConsumerUpgrade"],
-                   "VoiceNew": deviceJSON["channelPermissions"]["VoiceNew"],
-                   "VoiceUpgrade": deviceJSON["channelPermissions"]["VoiceUpgrade"]
+                   "guid":deviceJSON["id"],
+                   "sku": deviceJSON["sku"]["code"],
+                   //"StockInfo":deviceJSON["stockInfo"]["stock"],
+                   "disableClickAndCollectNow": ""+deviceJSON["disableClickAndCollectNow"]
     };
-    channelPermCol.push(deviceObj);
+    deviceDetailsCol.push(deviceObj);
 }
 
 function generateExcelFile(collection){
@@ -100,29 +89,18 @@ function generateExcelFile(collection){
             summaryBelow : true
         }
     }
-    var ws2 = wb.WorkSheet('ChannelPerm', wsOpts);
-    ws.Cell(1,1).String('Type');
-    ws.Cell(1,2).String('Sub Type');
-    ws.Cell(1,3).String('ConsumerNew');
-    ws.Cell(1,4).String('ConsumerUpgrade');
-    ws.Cell(1,5).String('VoiceNew');
-    ws.Cell(1,6).String('VoiceUpgrade');
-    ws.Cell(1,7).String('Price');
-    ws.Cell(1,8).String('Data');
-    ws.Cell(1,9).String('Path');
-     ws.Cell(1,9).String('ID');
+    var ws2 = wb.WorkSheet('New Worksheet', wsOpts);
+    ws.Cell(1,1).String('GUID');
+    ws.Cell(1,2).String('SKU');
+   // ws.Cell(1,3).String('StockInfo');
+    ws.Cell(1,4).String('disableClickAndCollectNow');
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
         var row = skuCountLength + 2;
-        ws.Cell(row,1).String(collection[skuCountLength]["type"]);
-        ws.Cell(row,2).String(collection[skuCountLength]["voice"]);
-        ws.Cell(row,3).String(collection[skuCountLength]["ConsumerNew"]);
-        ws.Cell(row,4).String(collection[skuCountLength]["ConsumerUpgrade"]);
-        ws.Cell(row,5).String(collection[skuCountLength]["VoiceNew"]);
-        ws.Cell(row,6).String(collection[skuCountLength]["VoiceUpgrade"]);
-        ws.Cell(row,7).String(collection[skuCountLength]["price"]);
-        ws.Cell(row,8).String(collection[skuCountLength]["dataCap"]);
-        ws.Cell(row,9).String(collection[skuCountLength]["path"]);
-         ws.Cell(row,10).String(collection[skuCountLength]["guid"]);
+        ws.Cell(row,1).String(collection[skuCountLength]["guid"]);
+        ws.Cell(row,2).String(collection[skuCountLength]["sku"]);
+       // ws.Cell(row,3).String(collection[skuCountLength]["StockInfo"]);
+        ws.Cell(row,4).String(collection[skuCountLength]["disableClickAndCollectNow"]);
+
     }
     ws.Row(1).Height(30);
     ws.Column(1).Width(50);
@@ -138,10 +116,16 @@ function generateExcelFile(collection){
     ws.Cell(1,4).Style(myStyle);
     ws.Cell(1,5).Style(myStyle);
     ws.Cell(1,6).Style(myStyle);
-    wb.write("ExcelOutput/Tariff_Paths_Aug.xlsx",function(err){
+    ws.Cell(1,7).Style(myStyle);
+    ws.Cell(1,8).Style(myStyle);
+    ws.Cell(1,9).Style(myStyle);
+    ws.Cell(1,10).Style(myStyle);
+    ws.Cell(1,11).Style(myStyle);
+    ws.Cell(1,12).Style(myStyle);
+    wb.write("ExcelOutput/accessoriesCnC_Report_26_08_2015.xlsx",function(err){
         console.log("done");
     });
-        
+
 }
 
 function escapeRegExp(str) {
@@ -155,23 +139,23 @@ function writeToFile(file,content){
     } else {
         modifiedFileCount++;
         console.log("Modified Files"+modifiedFileCount);
-        
+
     }
 });
-     
+
 }
 
 
 function convertBacktoOriginalState(newContent,file,newPathsContainer){
     var originalState;
-    
+
     newContent = beautify(newContent, { indent_size: 3 });
     for(var jCount =0;jCount<newPathsContainer.length;jCount++){
-               var oldPathValue = '"'+newPathsContainer[jCount]+'"';  
+               var oldPathValue = '"'+newPathsContainer[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(oldPathValue),"g");
                newContent = newContent.replace(regExpCheck,newPathsContainer[jCount]);
     }
-    writeToFile(file,newContent);  
-    
+    writeToFile(file,newContent);
+
 }
 

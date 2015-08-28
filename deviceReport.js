@@ -13,7 +13,7 @@ var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
 var deviceDetailsCol = [];
     
-recursive('D:/Kanban/Projects/14th_May_Branch/catalogueData/device/', function (err, files) {
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/device/', function (err, files) {
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
     console.log("Reading JSON files.....");
@@ -95,7 +95,10 @@ function readdeviceDetails(deviceJSON){
                    "payGo": payGFlag,
                    "PayMonthly": payMOnthlyFlag,
                    "StockInfo":deviceJSON["stockInfo"]["stock"],
-                   "OnStockPots": ""+deviceJSON["stockLimited"]
+                   "OnStockPots": ""+deviceJSON["stockLimited"],
+                   "disableClickAndCollect": ""+deviceJSON["disableClickAndCollect"],
+                   "disableClickAndCollectNow": ""+deviceJSON["disableClickAndCollectNow"],
+                    "category": ""+deviceJSON["fulfillmentData"]["productType"]
     };
     deviceDetailsCol.push(deviceObj);
 }
@@ -142,6 +145,9 @@ function generateExcelFile(collection){
     ws.Cell(1,10).String('PayMonthly');
     ws.Cell(1,11).String('StockInfo');
     ws.Cell(1,12).String('OnStockPots');
+    ws.Cell(1,13).String('disableClickAndCollect');
+    ws.Cell(1,14).String('disableClickAndCollectNow');
+    ws.Cell(1,15).String('Category');
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
         var row = skuCountLength + 2;
         ws.Cell(row,1).String(collection[skuCountLength]["guid"]);
@@ -156,6 +162,10 @@ function generateExcelFile(collection){
         ws.Cell(row,10).String(collection[skuCountLength]["PayMonthly"]);
         ws.Cell(row,11).String(collection[skuCountLength]["StockInfo"]);
         ws.Cell(row,12).String(collection[skuCountLength]["OnStockPots"]);
+        ws.Cell(row,13).String(collection[skuCountLength]["disableClickAndCollect"]);
+        ws.Cell(row,14).String(collection[skuCountLength]["disableClickAndCollectNow"]);
+        ws.Cell(row,15).String(collection[skuCountLength]["category"]);
+
     }
     ws.Row(1).Height(30);
     ws.Column(1).Width(50);
@@ -177,7 +187,7 @@ function generateExcelFile(collection){
     ws.Cell(1,10).Style(myStyle);
     ws.Cell(1,11).Style(myStyle);
     ws.Cell(1,12).Style(myStyle);
-    wb.write("ExcelOutput/deviceDetails_Report_v1.xlsx",function(err){ 
+    wb.write("ExcelOutput/deviceDetails_Report_27_08_2015.xlsx",function(err){
         console.log("done");
     });
         
