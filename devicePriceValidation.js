@@ -2,10 +2,10 @@
 /* Please fill the below information before runing the script */
 
 var prodCatURL = 'D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData',
-    merchPricesSheetURL = 'D:/Kanban/Projects_Gali/NodeJS/PricesSheet/prodCatPrice_Report_v1.xlsx',
+    merchPricesSheetURL = 'D:/Kanban/Projects_Gali/NodeAuto/NodeAutomations/ExcelOutput/prodCatPrice_Report_v2.xlsx',
     payMSKUCellColumn = 'A',payMPriceCellColumn = 'C',payGSKUCellColumn = 'A', payGPriceCellColumn = 'C',
-    payMTab_Min_Count = 2,payMTab_Max_Count = 375,payGTab_Min_Count= 2,payGTab_Max_Count = 638,
-    outputExcelName = "PriceValidator_03_07_2015v1.xlsx";
+    payMTab_Min_Count = 2,payMTab_Max_Count = 466,payGTab_Min_Count= 2,payGTab_Max_Count = 745,
+    outputExcelName = "PriceValidator_11_09_2015v1.xlsx";
 
 /* Do not modify the below script if you are not sure about the changes*/
 

@@ -11,27 +11,25 @@ var recursive = require('recursive-readdir');
 var pathRegExp = /\$\{(.*?)\}/g;
 var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
-var channelPermCol = [];
-    
-recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/', function (err, files) {
+var deviceDetailsCol = [];
+
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/device/', function (err, files) {
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
     console.log("Reading JSON files.....");
     var jsonFiles = files.filter(function(file) {jsonFileCount++; return file.substr(-5) === '.json'; });
-    channelPermCol =[];
-    
-    jsonFiles.forEach(function(file) {console.log(file);
+    deviceDetailsCol =[];
+    jsonFiles.forEach(function(file) {
         var content =  require(file);
-       // console.log(file);
         var newContent = content;
         var newSearch = newContent.match(pathRegExp);
         var newPathsContainer = [];
         if(newSearch != null){
             var uniqueArray = newSearch.filter(function(elem, pos) {
                 return newSearch.indexOf(elem) == pos;
-            }); 
-            for(var jCount =0;jCount<uniqueArray.length;jCount++){ 
-               var newPathValue = '"'+uniqueArray[jCount]+'"';  
+            });
+            for(var jCount =0;jCount<uniqueArray.length;jCount++){
+               var newPathValue = '"'+uniqueArray[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(uniqueArray[jCount]),"g");
                newPathsContainer.push(uniqueArray[jCount]);
                newContent = newContent.replace(regExpCheck,newPathValue);
@@ -43,32 +41,56 @@ recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogue
             json = JSON.parse(newContent);
         }
         jsonFilesIndex++;
-        readChannelPerm(json,file);
+        readdeviceDetails(json);
         if(jsonFiles.length === jsonFilesIndex){
-           generateExcelFile(channelPermCol);
+           generateExcelFile(deviceDetailsCol);
         }
     });
 });
 
-function readChannelPerm(deviceJSON,file){
-     
-    if(deviceJSON["data"]) var dataCap  = deviceJSON["data"];
-    else var dataCap = " ";
-   // file = file.replace("\","/\");
-                       // console.log(file;)
+function readdeviceDetails(deviceJSON){
+
+        var plansAssociated = deviceJSON["relationships"];
+        var payMOnthlyFlag = "false",payGFlag = "false";
+        for(var planCount=0;planCount<plansAssociated.length;planCount++){
+        var planPathID = plansAssociated[planCount]["id"];
+         if(plansAssociated[planCount]["prices"] != null) {
+             if(plansAssociated[planCount]["prices"].length >1){
+                 payMOnthlyFlag = "true";
+                 break;
+              }
+              else if((planPathID.search("prepaySims") == -1 ) && (planPathID.search("plan") != -1 )){
+                 payMOnthlyFlag = "true";
+                 break;
+              }
+          }
+        }
+
+        for(var planCount=0;planCount<plansAssociated.length;planCount++){
+             var plansPrices =  plansAssociated[planCount]["prices"];
+             var planPathID = plansAssociated[planCount]["id"];
+             if(plansAssociated[planCount]["prices"] != null) {
+                if(planPathID.search("prepaySims") != -1){
+                   payGFlag = "true";
+                   break;
+                }
+                else if(planPathID.search("plan") == -1){
+                    if(plansAssociated[planCount]["prices"].length == 1){
+                      payGFlag = "true";
+                      break;
+                    }
+                }
+             }
+        }
+   // var onStockPots = "yes";
     var deviceObj = {
-                   "voice":deviceJSON["subType"],
-                   "type": deviceJSON["type"],
-                   "guid": deviceJSON["id"],
-                   "path":file,
-                   "dataCap" : dataCap,
-                   "price": deviceJSON["price"],
-                   "ConsumerNew": deviceJSON["channelPermissions"]["ConsumerNew"],
-                   "ConsumerUpgrade": deviceJSON["channelPermissions"]["ConsumerUpgrade"],
-                   "VoiceNew": deviceJSON["channelPermissions"]["VoiceNew"],
-                   "VoiceUpgrade": deviceJSON["channelPermissions"]["VoiceUpgrade"]
+                   "guid":deviceJSON["id"],
+                   "sku": deviceJSON["sku"]["code"],
+                   "model": deviceJSON["model"],
+                   "cost": deviceJSON["costToO2"]
+
     };
-    channelPermCol.push(deviceObj);
+    deviceDetailsCol.push(deviceObj);
 }
 
 function generateExcelFile(collection){
@@ -100,29 +122,19 @@ function generateExcelFile(collection){
             summaryBelow : true
         }
     }
-    var ws2 = wb.WorkSheet('ChannelPerm', wsOpts);
-    ws.Cell(1,1).String('Type');
-    ws.Cell(1,2).String('Sub Type');
-    ws.Cell(1,3).String('ConsumerNew');
-    ws.Cell(1,4).String('ConsumerUpgrade');
-    ws.Cell(1,5).String('VoiceNew');
-    ws.Cell(1,6).String('VoiceUpgrade');
-    ws.Cell(1,7).String('Price');
-    ws.Cell(1,8).String('Data');
-    ws.Cell(1,9).String('Path');
-     ws.Cell(1,9).String('ID');
+    var ws2 = wb.WorkSheet('New Worksheet', wsOpts);
+    ws.Cell(1,1).String('GUID');
+    ws.Cell(1,2).String('SKU');
+    ws.Cell(1,3).String('Model');
+    ws.Cell(1,4).String('Cost to O2');
+
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
         var row = skuCountLength + 2;
-        ws.Cell(row,1).String(collection[skuCountLength]["type"]);
-        ws.Cell(row,2).String(collection[skuCountLength]["voice"]);
-        ws.Cell(row,3).String(collection[skuCountLength]["ConsumerNew"]);
-        ws.Cell(row,4).String(collection[skuCountLength]["ConsumerUpgrade"]);
-        ws.Cell(row,5).String(collection[skuCountLength]["VoiceNew"]);
-        ws.Cell(row,6).String(collection[skuCountLength]["VoiceUpgrade"]);
-        ws.Cell(row,7).String(collection[skuCountLength]["price"]);
-        ws.Cell(row,8).String(collection[skuCountLength]["dataCap"]);
-        ws.Cell(row,9).String(collection[skuCountLength]["path"]);
-         ws.Cell(row,10).String(collection[skuCountLength]["guid"]);
+        ws.Cell(row,1).String(collection[skuCountLength]["guid"]);
+        ws.Cell(row,2).String(collection[skuCountLength]["sku"]);
+        ws.Cell(row,3).String(collection[skuCountLength]["model"]);
+        ws.Cell(row,4).String(collection[skuCountLength]["cost"]);
+
     }
     ws.Row(1).Height(30);
     ws.Column(1).Width(50);
@@ -136,12 +148,11 @@ function generateExcelFile(collection){
     ws.Cell(1,2).Style(myStyle);
     ws.Cell(1,3).Style(myStyle);
     ws.Cell(1,4).Style(myStyle);
-    ws.Cell(1,5).Style(myStyle);
-    ws.Cell(1,6).Style(myStyle);
-    wb.write("ExcelOutput/Tariff_Paths_Aug_v1.xlsx",function(err){
+
+    wb.write("ExcelOutput/costtoO2Details_Report_30_09_2015.xlsx",function(err){
         console.log("done");
     });
-        
+
 }
 
 function escapeRegExp(str) {
@@ -155,23 +166,23 @@ function writeToFile(file,content){
     } else {
         modifiedFileCount++;
         console.log("Modified Files"+modifiedFileCount);
-        
+
     }
 });
-     
+
 }
 
 
 function convertBacktoOriginalState(newContent,file,newPathsContainer){
     var originalState;
-    
+
     newContent = beautify(newContent, { indent_size: 3 });
     for(var jCount =0;jCount<newPathsContainer.length;jCount++){
-               var oldPathValue = '"'+newPathsContainer[jCount]+'"';  
+               var oldPathValue = '"'+newPathsContainer[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(oldPathValue),"g");
                newContent = newContent.replace(regExpCheck,newPathsContainer[jCount]);
     }
-    writeToFile(file,newContent);  
-    
+    writeToFile(file,newContent);
+
 }
 

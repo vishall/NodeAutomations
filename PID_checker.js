@@ -15,7 +15,7 @@ var regExp = /"productID"(.*),/;
 
 checkDupPID : function(res) {*/
     
-recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master_M/catalogueData/plan/monthly_2015/july/', function (err, files) {
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/aug/', function (err, files) {
     var fileCount = 0;
     var index = 0;
     var myArray = [];

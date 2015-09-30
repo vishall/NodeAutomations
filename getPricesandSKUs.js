@@ -13,7 +13,7 @@ var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
 var deviceDetailsCol = [],payMonthlyPriceCollection = [], payGPriceCollection = [];;
     
-recursive('D:/Kanban/Projects/productCat_ThuRelease/catalogueData/device/', function (err, files) {
+recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/device/', function (err, files) {
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
     console.log("Reading JSON files.....");
@@ -127,7 +127,7 @@ function generateExcelFile(payMCollection,payGCollection){
     myStyle.Fill.Color('CCCCCC');
     ws.Cell(1,1).Style(myStyle);
     ws.Cell(1,2).Style(myStyle);
-    wb.write("ExcelOutput/prodCatPrice_Report_v1.xlsx",function(err){ 
+    wb.write("ExcelOutput/prodCatPrice_Report_v2.xlsx",function(err){
         console.log("done");
     });
         
