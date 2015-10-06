@@ -4,8 +4,8 @@
 var beautify = require('js-beautify'), XLSX = require('xlsx'),
     excelbuilder = require('excel4node'),fs = require('fs'),
     prettyjson = require('prettyjson'),recursive = require('recursive-readdir'),
-    mkdirp = require('mkdirp'),filePath = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/aug/",
-    trsPath = "D:/Kanban/Projects_Gali/Tariffs/Aug/v1.7 August Tariff Drop TRS.xlsx";
+    mkdirp = require('mkdirp'),filePath = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/Oct/",
+    trsPath = "D:/Kanban/Projects_Gali/Tariffs/Oct/v1.0 October Tariff Drop TRS BASELINE.xlsx";
 
 var options = {
   noColor: true
@@ -146,7 +146,7 @@ function readTRSInformation(){
     try{
         
         var workbook = XLSX.readFile(trsPath);
-        var tariffRows_Min_Count = 2,tariffRows_Max_Count =36;
+        var tariffRows_Min_Count = 2,tariffRows_Max_Count =37;
         var sheet_name_list = workbook.SheetNames;
         sheet_name_list.forEach(function(y) {
           if( y === "2. NEW Tariffs"){
@@ -155,7 +155,7 @@ function readTRSInformation(){
                   if(tariffRows_Min_Count <= tariffRows_Max_Count){
                         if(z[0] === '!') continue;
                          var altPID = null;
-                         if(worksheet['FB'+tariffRows_Min_Count]) altPID = worksheet['FC'+tariffRows_Min_Count].v;
+                         if(worksheet['FB'+tariffRows_Min_Count]) altPID = worksheet['FB'+tariffRows_Min_Count].v;
                           var tariffRow = {
                               "tariffType" : worksheet['D'+tariffRows_Min_Count].v,
                               "set" : worksheet['G'+tariffRows_Min_Count].v,
@@ -174,7 +174,7 @@ function readTRSInformation(){
                               "CFU" : worksheet['BB'+tariffRows_Min_Count].v,
                               "AFU" : worksheet['BC'+tariffRows_Min_Count].v,
                               "guid" : worksheet['FA'+tariffRows_Min_Count].v,
-                              "pid" : worksheet['FB'+tariffRows_Min_Count].v,
+                              "pid" : worksheet['EZ'+tariffRows_Min_Count].v,
                               "altPID" : altPID
                           }
                           tariffCollectionTRS.push(tariffRow);
@@ -217,7 +217,7 @@ var tariffStructure = {
 
 var tafCount = 0;
 function prepareFileName(tariffData){
-    var tariffFileName = "",filePath = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/aug/";
+    var tariffFileName = "",filePath = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/Oct/";
     if(tariffData["tariffType"] == "Standard Handset") filePath = filePath+ "/" +tariffData["duration"]+"_"+"standard";
     else filePath = filePath+"/" +tariffData["duration"]+"_"+tariffData["tariffType"];
 

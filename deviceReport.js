@@ -187,7 +187,7 @@ function generateExcelFile(collection){
     ws.Cell(1,10).Style(myStyle);
     ws.Cell(1,11).Style(myStyle);
     ws.Cell(1,12).Style(myStyle);
-    wb.write("ExcelOutput/deviceDetails_Report_28_09_2015.xlsx",function(err){
+    wb.write("ExcelOutput/deviceDetails_Report_09_09_2015.xlsx",function(err){
         console.log("done");
     });
         

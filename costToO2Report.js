@@ -87,7 +87,8 @@ function readdeviceDetails(deviceJSON){
                    "guid":deviceJSON["id"],
                    "sku": deviceJSON["sku"]["code"],
                    "model": deviceJSON["model"],
-                   "cost": deviceJSON["costToO2"]
+                   "cost": deviceJSON["costToO2"],
+                   "brand": deviceJSON["brand"],
 
     };
     deviceDetailsCol.push(deviceObj);
@@ -125,15 +126,18 @@ function generateExcelFile(collection){
     var ws2 = wb.WorkSheet('New Worksheet', wsOpts);
     ws.Cell(1,1).String('GUID');
     ws.Cell(1,2).String('SKU');
-    ws.Cell(1,3).String('Model');
-    ws.Cell(1,4).String('Cost to O2');
+    ws.Cell(1,3).String('Brand');
+    ws.Cell(1,4).String('Model');
+
+    ws.Cell(1,5).String('Cost to O2');
 
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
         var row = skuCountLength + 2;
         ws.Cell(row,1).String(collection[skuCountLength]["guid"]);
         ws.Cell(row,2).String(collection[skuCountLength]["sku"]);
-        ws.Cell(row,3).String(collection[skuCountLength]["model"]);
-        ws.Cell(row,4).String(collection[skuCountLength]["cost"]);
+        ws.Cell(row,3).String(collection[skuCountLength]["brand"]);
+        ws.Cell(row,4).String(collection[skuCountLength]["model"]);
+        ws.Cell(row,5).String(collection[skuCountLength]["cost"]);
 
     }
     ws.Row(1).Height(30);
