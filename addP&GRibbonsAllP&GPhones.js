@@ -21,6 +21,7 @@ recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogue
     var jsonFiles = files.filter(function(file) {jsonFileCount++; return file.substr(-5) === '.json'; });
     deviceDetailsCol =[];
     jsonFiles.forEach(function(file) {
+    //console.log(file);
         var content =  require(file);
         var newContent = content;
         var newSearch = newContent.match(pathRegExp);
@@ -77,12 +78,17 @@ function readdeviceDetails(deviceJSON,file,newPathsContainer){
 
              if(deviceJSON["promotion"]){
                 var prePayPromotion = deviceJSON["promotion"];
-                prePayPromotion["prepay"]= { "sash" :"50% extra data, for three months. Ends 31 Dec."};
+                if( prePayPromotion["prepay"]){
+                    prePayPromotion["prepay"]["ribbon"]= "50% extra data, for three months. Ends 31 Dec.";
+                }
+                else{
+                   prePayPromotion["prepay"]= { "ribbon" : "50% extra data, for three months. Ends 31 Dec." };
+                }
              }
              else{
                 deviceJSON["promotion"]  = {
                    "prepay":{
-                     "sash": "50% extra data, for three months. Ends 31 Dec."
+                     "ribbon": "50% extra data, for three months. Ends 31 Dec."
                    }
                 }
               }
