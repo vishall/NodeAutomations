@@ -73,7 +73,7 @@ function readdeviceDetails(deviceJSON,file,newPathsContainer){
              }
         }
 
-        if( (payGFlag) && ( deviceJSON["subType"] == "SmartPhone" || deviceJSON["subType"] == "iPhone") && ( deviceJSON["id"] == deviceJSON["leadModelInFamily"] ) ){
+        if( (payGFlag) && ( deviceJSON["subType"] == "SmartPhone" || deviceJSON["subType"] == "iPhone" || deviceJSON["subType"] == "StandardPhone") && ( deviceJSON["id"] == deviceJSON["leadModelInFamily"] ) ){
              //console.log(file);
 
              if(deviceJSON["promotion"]){
