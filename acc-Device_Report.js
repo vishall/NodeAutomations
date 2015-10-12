@@ -92,7 +92,7 @@ function pushAccytoDevices(param1,param2){
 
 function readdeviceDetails(deviceJSON){
     var assocDevices = [];
-    console.log(deviceJSON ["lifecycle"]["status"]);
+    //console.log(deviceJSON ["lifecycle"]["status"]);
     if((deviceJSON["recommendedForPhones"]) && ( deviceJSON ["lifecycle"]["status"] == "Active")){
         //console.log(deviceJSON["recommendedForPhones"].length);
         var accyLength = deviceJSON["recommendedForPhones"].length;
@@ -106,7 +106,7 @@ function readdeviceDetails(deviceJSON){
         }
     }
     else {
-         console.log("yup");
+         console.log("in else loop");
     }
 
     var devicesStr = " ";
