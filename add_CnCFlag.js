@@ -64,13 +64,18 @@ function addCnCFlag(json,file,newPathsContainer){
    // convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
         }
     }else if(stockInfo == "DelayedDelivery"){
-       if( json["disableClickAndCollect"] != true || json["disableClickAndCollectNow"] != false){
+    json["disableClickAndCollect"] = false;
+    var fileNewContent = JSON.stringify(json);
+        convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+
+
+/*       if( json["disableClickAndCollect"] != true || json["disableClickAndCollectNow"] != false){
           // console.log(file);
-           json["disableClickAndCollect"] = true;
-           json["disableClickAndCollectNow"] = false;
+           json["disableClickAndCollect"] = false;
+          // json["disableClickAndCollectNow"] = false;
            var fileNewContent = JSON.stringify(json);
-    //convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
-       }
+    convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+       }*/
     }else if(stockInfo == "OutOfStock"){
         if(json["disableClickAndCollect"] != true || json["disableClickAndCollectNow"] != false){
           // console.log(file);
@@ -87,14 +92,14 @@ function addCnCFlag(json,file,newPathsContainer){
                   json["disableClickAndCollect"] = false;
                   json["disableClickAndCollectNow"] = true;
                   var fileNewContent = JSON.stringify(json);
-          convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+         // convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
               }
     }
     if(endOfLife == "EndOfLife"){
         json["disableClickAndCollect"] = true;
         json["disableClickAndCollectNow"] = true;
          var fileNewContent = JSON.stringify(json);
-            convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
+           // convertBacktoOriginalState(fileNewContent,file,newPathsContainer);
     }
     
     //var fileNewContent = JSON.stringify(json);
