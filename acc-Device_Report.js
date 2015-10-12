@@ -13,7 +13,7 @@ var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
 var deviceDetailsCol = [];
 
-recursive('D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/accessories/', function (err, files) {
+recursive('/home/user/IdeaProjects/productCatalogueData_Master/catalogueData/accessories/', function (err, files) {
     var jsonFileCount = 0, jsonFilesIndex = 0;
     var json;
     console.log("Reading JSON files.....");
@@ -92,7 +92,8 @@ function pushAccytoDevices(param1,param2){
 
 function readdeviceDetails(deviceJSON){
     var assocDevices = [];
-    if(deviceJSON["recommendedForPhones"]){
+    console.log(deviceJSON ["lifecycle"]["status"]);
+    if((deviceJSON["recommendedForPhones"]) && ( deviceJSON ["lifecycle"]["status"] == "Active")){
         //console.log(deviceJSON["recommendedForPhones"].length);
         var accyLength = deviceJSON["recommendedForPhones"].length;
         var accyObj = deviceJSON["recommendedForPhones"];
@@ -117,6 +118,7 @@ function readdeviceDetails(deviceJSON){
                    "model":deviceJSON["model"],
                    "type":deviceJSON["type"],
                    "sku": deviceJSON["sku"]["code"],
+                   "lifecycle": deviceJSON["lifecycle"]["status"],
                    "StockInfo":deviceJSON["stock"],
                    "ConsumerNew": deviceJSON["channelPermissions"]["ConsumerNew"],
                    "ConsumerUpgrade": deviceJSON["channelPermissions"]["ConsumerUpgrade"],
@@ -158,7 +160,7 @@ function generateExcelFile2(collection){
         }
     }
     ws.Cell(1,1).String('Device Name');
-    ws.Cell(1,2).String('Acc1');
+    ws.Cell(1,2).String('Accessories');
 
 
     for(var skuCountLength = 0;skuCountLength < collection.length;skuCountLength++){
@@ -178,7 +180,7 @@ function generateExcelFile2(collection){
     ws.Cell(1,1).Style(myStyle);
     ws.Cell(1,2).Style(myStyle);
 
-    wb.write("ExcelOutput/Accessories_Device_RelationB0.1.xlsx",function(err){
+    wb.write("ExcelOutput/Accessories_Device_Relation.xlsx",function(err){
         console.log("Done");
     });
 
