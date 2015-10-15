@@ -3,8 +3,8 @@
 
 var prodCatURL = 'D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/',
     associationSheetURL = 'D:/Kanban/Projects_Gali/NodeAuto/NodeAutomations/ExcelInput/accy-EOL.xlsx',
-    accySKUCell = 'A', accyAssociationContainer = [],accySKUsCollection = [],
-     accyAssociationContainerLength,payMTab_Min_Count = 1,payMTab_Max_Count = 5 ;
+    accySKUCell = 'A', accyNoMatchesContainer = [],newaccySKUsCollection = [], accySKUsCollection = [],
+     accyAssociationContainerLength,payMTab_Min_Count = 2,payMTab_Max_Count = 107 ;
     
 
 /* Do not modify the below script if you are not sure about the changes*/
@@ -53,11 +53,12 @@ function loadMerchPrices(){
         console.log(e);
   }
 }
-
+var matchCount = 0;
 function loadProdCatFiles(){
      try{
         var prodCatDeviceURL = prodCatURL+"/accessories/";
-         accyAssociationContainerLength = accyAssociationContainer.length;
+         //accyAssociationContainerLength = accyAssociationContainer.length;
+          newaccySKUsCollection = accySKUsCollection.slice();
          var accySKUsCollectionLength =accySKUsCollection.length;
          //console.log(accySKUsCollectionLength);
         recursive(prodCatDeviceURL, function (err, files) {
@@ -89,12 +90,32 @@ function loadProdCatFiles(){
                             var json = JSON.parse(newContent);
                             index++;   
                      }
+                     (function(){
                      for(var accySKUsCollectionCount =0;accySKUsCollectionCount < accySKUsCollectionLength;accySKUsCollectionCount++){
-                     console.log(accySKUsCollection[accySKUsCollectionCount]);
+                     //console.log(accySKUsCollection[accySKUsCollectionCount]);
+                     //if(accySKUsCollection[accySKUsCollectionCount] == "AKOFSVBN") console.log("Got it");
+                      (function(){
                        if(accySKUsCollection[accySKUsCollectionCount] == json["sku"]["code"]){
+                          matchCount++;
+                          newaccySKUsCollection[accySKUsCollectionCount] = null;
                           makeAccessoryEOL(json,file,newPathsContainer);
+                          //console.log(matchCount);
+                          //console.log(matchCount);
+                         // break;
                        }
+                       else if(accySKUsCollectionCount == (accySKUsCollectionLength-1)){
+                         accyNoMatchesContainer.push(accySKUsCollection[accySKUsCollectionCount]);
+
+                        /* var uniqueArray = accyNoMatchesContainer.filter(function(elem, pos,arr) {
+                                             return arr.indexOf(elem) == pos;
+                                           });*/
+
+//console.log(accySKUsCollection.length);
+                         //console.log("No match for:: "+accySKUsCollection[accySKUsCollectionCount]);
+                       }
+                       })();
                      }
+                     })(json,file,newPathsContainer);
                      
                     });
             }else{
@@ -128,6 +149,12 @@ function writeToFile(file,content){
     } else {
         modifiedFileCount++;
         console.log("Modified Files"+modifiedFileCount);
+        var uniqueArray = newaccySKUsCollection.filter(function(elem, pos,arr) {
+                                                     return arr.indexOf(elem) == pos;
+                                                   });
+        //console.log("..................");
+        console.log(uniqueArray);
+       // console.log("-----------");
         
     }
 });
@@ -153,6 +180,7 @@ function convertBacktoOriginalState(newContent,file,newPathsContainer){
     console.log("Application has started");
     loadMerchPrices();
     loadProdCatFiles();
+
     //console.log(tariffCollectionTRS);
 })();
 
