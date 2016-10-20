@@ -4,8 +4,8 @@
 var beautify = require('js-beautify'), XLSX = require('xlsx'),
     excelbuilder = require('excel4node'),fs = require('fs'),
     prettyjson = require('prettyjson'),recursive = require('recursive-readdir'),
-    mkdirp = require('mkdirp'),filePath = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/Oct/",
-    trsPath = "D:/Kanban/Projects_Gali/Tariffs/Oct/v1.0 October Tariff Drop TRS BASELINE.xlsx";
+    mkdirp = require('mkdirp'),filePath = "C:/Jas/October/OctoberTariffs/test/",
+    trsPath = "C:/Jas/October/Copy of v5 1_9 2016 TRS Consumer PAYM.xlsx";
 
 var options = {
   noColor: true
@@ -15,10 +15,10 @@ var options = {
 var pathRegExp = /\$\{(.*?)\}/g;
 var modifiedPathregExp = /\"\$\{(.*?)\"\}/g;
 
-if (!String.prototype.format) { 
+if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
+    return this.replace(/{(\d+)}/g, function(match, number) {
       return typeof args[number] != 'undefined'
         ? args[number]
         : match
@@ -37,14 +37,14 @@ function convertToProperJSON(file){
          var fileContent =  require(file);
          var fileSearchResults = fileContent.match(pathRegExp);
          var dollarPathsContainer = [];
-         var convertedJSON = null; 
+         var convertedJSON = null;
          if(fileSearchResults != null){
             var uniqueArray = fileSearchResults.filter(function(elem, pos) {
                 return fileSearchResults.indexOf(elem) == pos;
-            }); 
+            });
 
             for(var jCount =0;jCount<uniqueArray.length;jCount++){
-               var dollarJSONPathValue = '"'+uniqueArray[jCount]+'"';  
+               var dollarJSONPathValue = '"'+uniqueArray[jCount]+'"';
                var regExpCheck = new RegExp(escapeRegExp(uniqueArray[jCount]),"g");
                dollarPathsContainer.push(uniqueArray[jCount]);
                fileContent = fileContent.replace(regExpCheck,dollarJSONPathValue);
@@ -54,13 +54,13 @@ function convertToProperJSON(file){
         }
         else{
             convertedJSON = JSON.parse(fileContent);
-        }  
+        }
         properJSONObj = {
            json : convertedJSON,
            file : file,
            pathsContainer : dollarPathsContainer
         }
-       return properJSONObj;   
+       return properJSONObj;
    }
     catch(e){
        console.log(".......Error in convertToProperJSON block......");
@@ -68,8 +68,8 @@ function convertToProperJSON(file){
        console.log(e);
     }
 }
-    
-    
+
+
 function convertBacktoOriginalState(tariffFileName, tariffFileContent){
     try{
         var boltonRelationsCon = tariffFileContent["relationships"];
@@ -104,13 +104,13 @@ function writeToFile(file,content){
             modifiedFileCount++;
             //console.log("Modified Files"+modifiedFileCount);
         }
-      }); 
+      });
   }
   catch(e){
       console.log(".......Error in writeToFile block......");
       console.log(".......Error is....");
       console.log(e);
-    }    
+    }
 }
 
 // Reading JSON files from ProdCat
@@ -129,7 +129,7 @@ function loadJSONFiles(){
                 var convertedJSONObj = convertToProperJSON(file);
                 //Do the required Operation on JOSN files
                 //modifyChannelPermissions(convertedJSONObj["json"],convertedJSONObj["file"],convertedJSONObj["pathsContainer"]);
-            }); 
+            });
         });
     }
     catch(e){
@@ -142,46 +142,46 @@ function loadJSONFiles(){
 
 // Read the TRS Information
 var tariffCollectionTRS = [];
-function readTRSInformation(){ 
+function readTRSInformation(){
     try{
-        
+
         var workbook = XLSX.readFile(trsPath);
-        var tariffRows_Min_Count = 2,tariffRows_Max_Count =37;
+        var tariffRows_Min_Count = 2,tariffRows_Max_Count =24;
         var sheet_name_list = workbook.SheetNames;
         sheet_name_list.forEach(function(y) {
-          if( y === "2. NEW Tariffs"){
+          if( y === "build"){
               var worksheet = workbook.Sheets[y];
               for (z in worksheet) {
                   if(tariffRows_Min_Count <= tariffRows_Max_Count){
                         if(z[0] === '!') continue;
                          var altPID = null;
-                         if(worksheet['FB'+tariffRows_Min_Count]) altPID = worksheet['FB'+tariffRows_Min_Count].v;
+                         if(worksheet['D'+tariffRows_Min_Count]) //altPID = worksheet['D'+tariffRows_Min_Count].v;
                           var tariffRow = {
-                              "tariffType" : worksheet['D'+tariffRows_Min_Count].v,
-                              "set" : worksheet['G'+tariffRows_Min_Count].v,
-                              "sharingType" : worksheet['J'+tariffRows_Min_Count].v,
-                              "duration" : worksheet['K'+tariffRows_Min_Count].v,
-                              "voiceOrData" : worksheet['L'+tariffRows_Min_Count].v,
-                              "cost" : worksheet['N'+tariffRows_Min_Count].v,
-                              "minutes" : worksheet['R'+tariffRows_Min_Count].v,
-                              "texts" : worksheet['U'+tariffRows_Min_Count].v,
-                              "data" : worksheet['W'+tariffRows_Min_Count].v,
-                              "MB/GB" : worksheet['X'+tariffRows_Min_Count].v,
-                              "4G" : worksheet['AD'+tariffRows_Min_Count].v,
-                              "productName" : worksheet['BM'+tariffRows_Min_Count].v,
-                              "CFA" : worksheet['AZ'+tariffRows_Min_Count].v,
-                              "AFA" : worksheet['BA'+tariffRows_Min_Count].v,
-                              "CFU" : worksheet['BB'+tariffRows_Min_Count].v,
-                              "AFU" : worksheet['BC'+tariffRows_Min_Count].v,
-                              "guid" : worksheet['FA'+tariffRows_Min_Count].v,
-                              "pid" : worksheet['EZ'+tariffRows_Min_Count].v,
-                              "altPID" : altPID
-                          }
+                            "tariffType" : worksheet['I'+tariffRows_Min_Count].v,
+                            "set" : worksheet['L'+tariffRows_Min_Count].v,
+                            "sharingType" : worksheet['N'+tariffRows_Min_Count].v,
+                            "duration" : worksheet['Q'+tariffRows_Min_Count].v,
+                            "voiceOrData" : worksheet['S'+tariffRows_Min_Count].v,
+                            "cost" : worksheet['T'+tariffRows_Min_Count].v,
+                            "minutes" : worksheet['V'+tariffRows_Min_Count].v,
+                            "texts" : worksheet['W'+tariffRows_Min_Count].v,
+                            "data" : worksheet['X'+tariffRows_Min_Count].v,
+                            "MB/GB" : worksheet['Y'+tariffRows_Min_Count].v,
+                            "4G" : worksheet['FD'+tariffRows_Min_Count].v,
+                            "productName" : worksheet['BP'+tariffRows_Min_Count].v,
+                            "CFA" : worksheet['BD'+tariffRows_Min_Count].v,
+                            "AFA" : worksheet['BE'+tariffRows_Min_Count].v,
+                            "CFU" : worksheet['BF'+tariffRows_Min_Count].v,
+                            "AFU" : worksheet['BG'+tariffRows_Min_Count].v,
+                            "guid" : worksheet['FE'+tariffRows_Min_Count].v,
+                            "pid" : worksheet['E'+tariffRows_Min_Count].v,
+                            "altPID" : worksheet['D'+tariffRows_Min_Count].v //altPID
+                        }
                           tariffCollectionTRS.push(tariffRow);
-                          tariffRows_Min_Count++; 
+                          tariffRows_Min_Count++;
                       }
               }
-          } 
+          }
         });
         console.log("TRS information has been loaded");
     }
@@ -217,7 +217,7 @@ var tariffStructure = {
 
 var tafCount = 0;
 function prepareFileName(tariffData){
-    var tariffFileName = "",filePath = "D:/Kanban/Projects_Gali/ProdCat/productCatalogueData_Master/catalogueData/plan/monthly_2015/Oct/";
+    var tariffFileName = "",filePath = "C:/Jas/October/OctoberTariff/test";
     if(tariffData["tariffType"] == "Standard Handset") filePath = filePath+ "/" +tariffData["duration"]+"_"+"standard";
     else filePath = filePath+"/" +tariffData["duration"]+"_"+tariffData["tariffType"];
 
@@ -231,20 +231,19 @@ function prepareFileName(tariffData){
     
     if(tariffData["voiceOrData"] == "Data Only"){
         if(tariffData["tariffType"] == "Standard Handset") 
-             tariffFileName = tariffData["data"]+tariffData["MB/GB"]+"-"+tariffData["duration"]+"-mbb"+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
+             tariffFileName = tariffData["data"]+tariffData["MB/GB"]+"-"+tariffData["duration"]+"m"+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
         else
-             tariffFileName = tariffData["data"]+tariffData["MB/GB"]+"-"+tariffData["duration"]+"-"+tariffData["tariffType"]+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
+             tariffFileName = tariffData["data"]+tariffData["MB/GB"]+"-"+tariffData["duration"]+"m"+"-mbb"+"-"+tariffData["tariffType"]+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
     }
     else{
         if(tariffData["minutes"] == "Unlimited") tariffFileName = "unltd-";
         else   tariffFileName = tariffData["minutes"]+"m-";
             
         if(tariffData["tariffType"] == "Standard Handset") 
-             tariffFileName = tariffFileName + ""+tariffData["duration"]+"-"+ tariffData["data"]+tariffData["MB/GB"]+"-mbb"+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
+             tariffFileName = tariffFileName + ""+tariffData["duration"]+"-"+ tariffData["data"]+tariffData["MB/GB"]+"-paym"+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
         else
-             tariffFileName = tariffFileName + ""+tariffData["duration"]+"-"+ tariffData["data"]+tariffData["MB/GB"]+"-"+tariffData["tariffType"]+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
+             tariffFileName = tariffFileName + ""+tariffData["duration"]+"m"+"-"+ tariffData["data"]+tariffData["MB/GB"]+"-"+tariffData["tariffType"]+"-"+parseFloat(tariffData["cost"]).toFixed(2)+"gbp";
     }
-
 
 
     tariffFileName = tariffFileName.replace(".","-");
@@ -267,14 +266,14 @@ function generateTariff(trsRowData){
     var newFinalTariffJSON= null;
     newTariffJSON["id"] = trsRowData["guid"];
     newTariffJSON["productID"] = trsRowData["pid"];
-    newTariffJSON["commitmentLength"] = "P"+trsRowData["duration"];
+    newTariffJSON["commitmentLength"] = "P"+trsRowData["duration"]+"M";
     
     if(trsRowData["4G"] == "4G") newTariffJSON["fourGCapable"] = true;
     else if(trsRowData["4G"] == "N/A") newTariffJSON["fourGCapable"] = true;
     else newTariffJSON["fourGCapable"] = false;
     
     newTariffJSON["price"] = parseFloat(trsRowData["cost"]).toFixed(2);
-    newTariffJSON["texts"] = trsRowData["texts"];
+    newTariffJSON["texts"] = trsRowData["texts"]+"";
     newTariffJSON["fulfillmentData"]["productName"] = trsRowData["productName"];
     
     if(trsRowData["CFA"] == "Y")  newTariffJSON["channelPermissions"]["ConsumerNew"] = "Buyable";
@@ -336,42 +335,52 @@ function createTariffs(){
 
 var tariffBoltonRelationShipCon = [{
     "id": "${idOf('/boltons/4g-access-low-end-foc.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/4g-access-low-end-gbp5.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/your-family-bolt-on.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/mms-50.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/international-favourites-3.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/international-favourites-5.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/data-abroad-std.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/retention-unlimited-o2-to-o2-calls.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/retention-unlimited-landline-calls.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/retention-unlimited-weekend-calls.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/afu-mms-50-foc.json')}"
-  }, {
+   }, {
     "id": "${idOf('/boltons/500m-o2-to-o2-calls.json')}"
    }, {
      "id": "${idOf('/boltons/retention-200-mins.json')}"
    },{
      "id": "${idOf('/boltons/europe-my-europe-extra.json')}"
-    },{
+   },{
          "id": "${idOf('/billCredits/150.json')}"
-  }];
+   },{
+      "id": "${idOf('/boltons/service-bolton-50-perc-3-months-airtime-discount.json')}"
+   },{
+      "id": "${idOf('/boltons/service-bolton-50-perc-6-months-airtime-discount.json')}"
+   },{
+      "id": "${idOf('/boltons/service-bolton-30-perc-6-months-airtime-discount.json')}"
+   },{
+       "id": "${idOf('/boltons/service-bolton-40-perc-6-months-airtime-discount.json')}"
+ },{
+          "id": "${idOf('/boltons/service-bolton-100-perc-mbb-6-months-airtime-discount.json')}"
+    }];
 
 function boltonsMapRelGen(boltonRelMappingArray){
     var boltonsRelArray = [];
     for(var boltonRelMappingArrayCount =0;boltonRelMappingArrayCount<boltonRelMappingArray.length;boltonRelMappingArrayCount++){
 
         var boltonIndex = boltonRelMappingArray[boltonRelMappingArrayCount];
-        if(boltonIndex !=14)
+        if(boltonIndex !=20)
             boltonsRelArray.push({ "type": "bolton","id":tariffBoltonRelationShipCon[boltonIndex]["id"]});
         else
             boltonsRelArray.push({ "type": "billcredit","id":tariffBoltonRelationShipCon[boltonIndex]["id"]});
@@ -386,11 +395,12 @@ function generateSIMOVoiceTariff(trsTariffData,tariffStructureJSON){
     tariffProduct["subType"] = "Voice";
     tariffProduct["family"] = "Standard";
     var minutesString = trsTariffData["minutes"].toString();
+    minutesString = minutesString+"";
     tariffProduct["callTime"] = {
           "value"  :  minutesString,
           "unit"   : "minutes" 
     };
-    tariffProduct["texts"] = trsTariffData["texts"];
+    tariffProduct["texts"] = trsTariffData["texts"]+"";
     
     tariffProduct["fulfillmentData"] = {
             "productType": "POT",
@@ -409,10 +419,10 @@ function generateSIMOVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 100:
                      case 200:
                      case 300:
-                        boltonRelMapping = [0,1,11,10,6,4,3,5,7,8,9,2];
+                        boltonRelMapping = [18,17,16,15,0,1,11,10,6,4,3,5,7,8,9,2];
                         break;
                      case 500:
-                        boltonRelMapping = [11,10,6,4,3,5,7,12,8,9,2];
+                        boltonRelMapping = [18,17,16,15,11,10,6,4,3,5,7,12,8,9,2];
                         break;
                      case 1:
                      case 2:
@@ -421,23 +431,25 @@ function generateSIMOVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 5:
                      case 6:
                      case 7:
-                       boltonRelMapping = [10,6,4,3,5,2];
+                       boltonRelMapping = [18,17,16,15,10,6,4,3,5,2];
                        break;
                      case 8:
                      case 9:
                      case 10:
                      case 15:
                      case 20:
-                      boltonRelMapping = [10,6,13,4,3,5,2];
+                     case 30:
+                     case 50:
+                      boltonRelMapping = [18,17,16,15,10,6,13,4,3,5,2];
                       break;
                       default:
-                        boltonRelMapping = [10,6,13,4,3,5,2];
+                        boltonRelMapping = [18,17,16,15,10,6,13,4,3,5,2];
                         break;
                 }
         var boltonsMapRelObj = boltonsMapRelGen(boltonRelMapping);
         tariffProduct["relationships"] = boltonsMapRelObj;
     }else{
-        boltonRelMapping = [1,6,4,3,5];
+        boltonRelMapping = [18,17,16,15,1,6,4,3,5];
         var sharedGuideObj = {
               "productType": "LIT",
               "productId": "O2CN1579N",
@@ -457,7 +469,7 @@ function generateSIMODataTariff(trsTariffData,tariffStructureJSON){
     var tariffProduct = tariffStructureJSON,boltonRelMapping = [];
     tariffProduct["type"] = "SimOnly";
     tariffProduct["subType"] = "Data";
-    tariffProduct["texts"] = trsTariffData["texts"];
+    tariffProduct["texts"] = trsTariffData["texts"]+"";
     tariffProduct["data"] = trsTariffData["data"]+trsTariffData["MB/GB"];
     tariffProduct["fulfillmentData"] = {
             "productType": "POT",
@@ -471,9 +483,41 @@ function generateSIMODataTariff(trsTariffData,tariffStructureJSON){
     };
 
     if(trsTariffData["sharingType"] != "Secondary"){
-
-    }else{
-        boltonRelMapping = [];
+    var dataCapacity = trsTariffData["data"];
+           switch(dataCapacity){
+                case 100:
+                case 200:
+                case 300:
+                     boltonRelMapping = [19,18,17,16,15];
+                   break;
+                case 500:
+                   boltonRelMapping = [19,18,17,16,15];
+                   break;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                  boltonRelMapping = [19,18,17,16,15];
+                  break;
+                case 8:
+                case 9:
+                case 10:
+                case 15:
+                case 20:
+                case 30:
+                  boltonRelMapping = [19,18,17,16,15];
+                 break;
+                default:
+                   boltonRelMapping = [19,18,17,16,15];
+                   break;
+           }
+   var boltonsMapRelObj = boltonsMapRelGen(boltonRelMapping);
+   tariffProduct["relationships"] = boltonsMapRelObj;
+}else{
+        boltonRelMapping = [19,18,17,16,15];
         var sharedGuideObj = {
               "productType": "LIT",
               "productId": "O2CN1579N",
@@ -496,11 +540,13 @@ function generateRefreshVoiceTariff(trsTariffData,tariffStructureJSON){
     tariffProduct["family"] = "O2Refresh";
     tariffProduct["alternativeProductID"] = trsTariffData["altPID"];
     var minutesString = trsTariffData["minutes"].toString();
+    minutesString = minutesString+"";
+
     tariffProduct["callTime"] = {
           "value"  :  minutesString,
           "unit"   : "minutes"
     };
-    tariffProduct["texts"] = trsTariffData["texts"];
+    tariffProduct["texts"] = trsTariffData["texts"]+"";
 
     tariffProduct["fulfillmentData"] = {
             "productType": "POT",
@@ -513,10 +559,10 @@ function generateRefreshVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 100:
                      case 200:
                      case 300:
-                        boltonRelMapping = [0,1,11,10,6,4,3,5,7,8,9,2];
+                        boltonRelMapping = [18,17,16,15,0,1,11,10,6,4,3,5,7,8,9,2];
                         break;
                      case 500:
-                        boltonRelMapping = [11,10,6,4,3,5,12,7,8,9,2];
+                        boltonRelMapping = [18,17,16,15,11,10,6,4,3,5,12,7,8,9,2];
                         break;
                      case 1:
                      case 2:
@@ -530,16 +576,18 @@ function generateRefreshVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 10:
                      case 15:
                      case 20:
-                       boltonRelMapping = [10,6,4,3,5,2];
+                     case 30:
+                     case 50:
+                       boltonRelMapping = [18,17,16,15,10,6,4,3,5,2];
                        break;
                       default:
-                        boltonRelMapping = [10,6,4,3,5,2];
+                        boltonRelMapping = [18,17,16,15,10,6,4,3,5,2];
                         break;
                 }
         var boltonsMapRelObj = boltonsMapRelGen(boltonRelMapping);
         tariffProduct["relationships"] = boltonsMapRelObj;
     }else{
-        boltonRelMapping = [6,4,3,5];
+        boltonRelMapping = [18,17,16,15,6,4,3,5];
         var sharedGuideObj = {
               "productType": "LIT",
               "productId": "O2CN1579N",
@@ -562,11 +610,7 @@ function generateRefreshDataTariff(trsTariffData,tariffStructureJSON){
     var tariffProduct = tariffStructureJSON,boltonRelMapping = [];
     tariffProduct["type"] = "Refresh";
     tariffProduct["subType"] = "Data";
-    tariffProduct["callTime"] = {
-          "value"  :  trsTariffData["minutes"],
-          "unit"   : "minutes"
-    };
-    tariffProduct["texts"] = trsTariffData["texts"];
+    tariffProduct["texts"] = trsTariffData["texts"]+"";
     tariffProduct["data"] = trsTariffData["data"]+trsTariffData["MB/GB"];
     tariffProduct["alternativeProductID"] = trsTariffData["altPID"];
     tariffProduct["fulfillmentData"] = {
@@ -575,9 +619,41 @@ function generateRefreshDataTariff(trsTariffData,tariffStructureJSON){
     };
 
     if(trsTariffData["sharingType"] != "Secondary"){
-
-    }else{
-        boltonRelMapping = [0,3];
+    var dataCapacity = trsTariffData["data"];
+           switch(dataCapacity){
+                case 100:
+                case 200:
+                case 300:
+                   boltonRelMapping = [19,18,17,16,15];
+                   break;
+                case 500:
+                   boltonRelMapping = [19,18,17,16,15];
+                   break;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                  boltonRelMapping = [19,18,17,16,15];
+                  break;
+                case 8:
+                case 9:
+                case 10:
+                case 15:
+                case 20:
+                case 30:
+                  boltonRelMapping = [19,18,17,16,15];
+                 break;
+                default:
+                   boltonRelMapping = [19,18,17,16,15];
+                   break;
+           }
+   var boltonsMapRelObj = boltonsMapRelGen(boltonRelMapping);
+   tariffProduct["relationships"] = boltonsMapRelObj;
+}else{
+        boltonRelMapping = [19,18,17,16,15,0,3];
         var sharedGuideObj = {
               "productType": "LIT",
               "productId": "O2CN1579N",
@@ -603,11 +679,12 @@ function generateStandardVoiceTariff(trsTariffData,tariffStructureJSON){
     tariffProduct["subType"] = "Voice";
     tariffProduct["family"] = "Standard";
     var minutesString = trsTariffData["minutes"].toString();
+    minutesString = minutesString+"";
     tariffProduct["callTime"] = {
           "value"  :  minutesString,
           "unit"   : "minutes"
     };
-    tariffProduct["texts"] = trsTariffData["texts"];
+    tariffProduct["texts"] = trsTariffData["texts"]+"";
 
     tariffProduct["fulfillmentData"] = {
             "productType": "POT",
@@ -626,10 +703,10 @@ function generateStandardVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 100:
                      case 200:
                      case 300:
-                        boltonRelMapping = [0,1,11,10,6,4,3,5,7,8,9,2,14];
+                        boltonRelMapping = [18,17,16,15,0,1,11,10,6,4,3,5,7,8,9,2,14];
                         break;
                      case 500:
-                        boltonRelMapping = [11,10,6,4,3,5,12,7,8,9,2,14];
+                        boltonRelMapping = [18,17,16,15,11,10,6,4,3,5,12,7,8,9,2,14];
                         break;
                      case 1:
                      case 2:
@@ -638,7 +715,7 @@ function generateStandardVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 5:
                      case 6:
                      case 7:
-                       boltonRelMapping = [10,6,4,3,5,2,14];
+                       boltonRelMapping = [18,17,16,15,10,6,4,3,5,2,14];
                        break;
                      case 8:
                      case 9:
@@ -646,16 +723,16 @@ function generateStandardVoiceTariff(trsTariffData,tariffStructureJSON){
                      case 15:
                      case 20:
                      case 30:
-                       boltonRelMapping = [10,6,13,4,3,5,2,14];
+                       boltonRelMapping = [18,17,16,15,10,6,13,4,3,5,2,14];
                       break;
                      default:
-                        boltonRelMapping = [10,6,13,4,3,5,2,14];
+                        boltonRelMapping = [18,17,16,15,10,6,13,4,3,5,2,14];
                         break;
                 }
         var boltonsMapRelObj = boltonsMapRelGen(boltonRelMapping);
         tariffProduct["relationships"] = boltonsMapRelObj;
     }else{
-        boltonRelMapping = [];
+        boltonRelMapping = [18,17,16,15];
         var sharedGuideObj = {
               "productType": "LIT",
               "productId": "O2CN1579N",
@@ -678,7 +755,7 @@ function generateStandardDataTariff(trsTariffData,tariffStructureJSON){
     tariffProduct["type"] = "Standard";
     tariffProduct["subType"] = "Data";
     tariffProduct["data"] = trsTariffData["data"]+trsTariffData["MB/GB"];
-    tariffProduct["texts"] = trsTariffData["texts"];
+    tariffProduct["texts"] = trsTariffData["texts"]+"";
 
     tariffProduct["fulfillmentData"] = {
             "productType": "POT",
@@ -692,8 +769,40 @@ function generateStandardDataTariff(trsTariffData,tariffStructureJSON){
     };
 
     if(trsTariffData["sharingType"] != "Secondary"){
-
-    }else{
+    var dataCapacity = trsTariffData["data"];
+           switch(dataCapacity){
+                case 100:
+                case 200:
+                case 300:
+                   boltonRelMapping = [18,17,16,15,0,1,11,10,6,4,3,5,7,8,9,2,14];
+                   break;
+                case 500:
+                   boltonRelMapping = [18,17,16,15,11,10,6,4,3,5,12,7,8,9,2,14];
+                   break;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                  boltonRelMapping = [18,17,16,15,10,6,4,3,5,2,14];
+                  break;
+                case 8:
+                case 9:
+                case 10:
+                case 15:
+                case 20:
+                case 30:
+                  boltonRelMapping = [18,17,16,15,10,6,13,4,3,5,2,14];
+                 break;
+                default:
+                   boltonRelMapping = [18,17,16,15,10,6,13,4,3,5,2,14];
+                   break;
+           }
+   var boltonsMapRelObj = boltonsMapRelGen(boltonRelMapping);
+   tariffProduct["relationships"] = boltonsMapRelObj;
+}else{
         boltonRelMapping = [];
         var sharedGuideObj = {
               "productType": "LIT",
